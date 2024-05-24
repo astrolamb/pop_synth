@@ -63,19 +63,27 @@ if __name__ == '__main__':
     h2cf = np.load(f'./data/accre_runs/h2cf_model{args.model_idx}.npy')
 
     # bootstrap the data
-    h2cf = bootstrap(h2cf)
+    # save the statistics as a structured array with the same length as the
+    # number of frequencies and number of bootstraps
+    stats = np.zeros((len(h2cf), 30), dtype=[('mean', float),
+                                                    ('variance', float),
+                                                    ('skewness', float),
+                                                    ('kurtosis', float)])
+    for ii in range(h2cf.shape[0]):
+        h2cf = bootstrap(h2cf)
 
-    # compute the statistics
-    mean, variance, skewness, kurtosis = compute_stats(h2cf)
+        # compute the statistics
+        mean, variance, skewness, kurtosis = compute_stats(h2cf)
 
-    # save the statistics as a structured array
-    stats = np.zeros(len(mean), dtype=[('mean', float),
-                                       ('variance', float),
-                                       ('skewness', float),
-                                       ('kurtosis', float)])
-    stats['mean'] = mean
-    stats['variance'] = variance
-    stats['skewness'] = skewness
-    stats['kurtosis'] = kurtosis
+        # store the statistics
+        stats[ii]['mean'] = mean
+        stats[ii]['variance'] = variance
+        stats[ii]['skewness'] = skewness
+        stats[ii]['kurtosis'] = kurtosis
+
+        # save the statistics every 1000 iterations
+        if ii % 1000 == 0:
+            np.save(f'./data/accre_runs/h2cf_model{args.model_idx}_stats.npy',
+                    stats)
 
     np.save(f'./data/accre_runs/h2cf_model{args.model_idx}_stats.npy', stats)
