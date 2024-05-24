@@ -157,6 +157,34 @@ def pop_synth(N, f_mid, log10_M_mid, z_mid, dlogf, nreals=100000, nfreqs=30):
     return h2cf
 
 
+def ideal_gwb(N, f_mid, log10_M_mid, z_mid, dlogf, nfreqs=30):
+    """
+    """
+    h2 = hc2_f(f_mid[:, None, None],
+               10**log10_M_mid[None, :, None],
+               z_mid[None, None, :])
+    mean_h2cf = (N * h2).sum(axis=(-2, -1)) / dlogf
+    var_h2cf = (N * h2**2).sum(axis=(-2, -1)) / dlogf**2
+    N_h26 = (N * h2**3).sum(axis=(-2, -1)) / dlogf**3
+    N_h28 = (N * h2**4).sum(axis=(-2, -1)) / dlogf**4
+
+    return mean_h2cf, var_h2cf, N_h26, N_h28
+
+
+def skewness(moments):
+    """
+    """
+    #return 2*moments[0]/np.sqrt(moments[1]) + moments[2]/moments[1]**1.5
+    return moments[2]/moments[1]**1.5
+
+
+def kurtosis(moments):
+    """
+    """
+    #return 10*moments[0]**2/moments[1] + 6 + 7*moments[0]*moments[2]/moments[1]**2 + moments[3]/moments[1]**2
+    return moments[3]/moments[1]**2
+
+
 def bootstrap(h2cf):
     """
     """
