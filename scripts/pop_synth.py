@@ -202,7 +202,7 @@ def smbhb_number_per_cell(freqs: np.ndarray, M_edges: np.ndarray,
         return N
 
 
-def pop_synth(N: np.ndarray, freqs: np.ndarray, M_mid: np.ndarray,
+def pop_synth(N: np.ndarray, freq_bins: np.ndarray, M_mid: np.ndarray,
               z_mid: np.ndarray, n_real=100000, seed=None) -> np.ndarray:
     """
         Population synthesis of SMBHBs
@@ -212,7 +212,7 @@ def pop_synth(N: np.ndarray, freqs: np.ndarray, M_mid: np.ndarray,
         N : np.ndarray
             Number of SMBHBs per grid cell of frequency, chirp mass and
             redshift
-        freqs : np.ndarray
+        freqs_bins : np.ndarray
             Frequency array
         log10_M_mid : np.ndarray
             Midpoints of the chirp mass bins
@@ -228,7 +228,8 @@ def pop_synth(N: np.ndarray, freqs: np.ndarray, M_mid: np.ndarray,
         np.ndarray
             Realisations of the GWB characteristic strain squared
     """
-    dlogf = np.log(freqs[1:]) - np.log(freqs[:-1])
+    dlogf = np.log(freq_bins[1:]) - np.log(freq_bins[:-1])
+    freqs = 0.5 * (freq_bins[:-1] + freq_bins[1:])
     size = (freqs.shape[0], M_mid.shape[0], z_mid.shape[0])
     h2cf = np.zeros((n_real, freqs.shape[0]))
 
